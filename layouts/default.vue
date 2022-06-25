@@ -1,64 +1,57 @@
+
 <template>
-  <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
+  <v-app>
+    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" app clipped>
+      <template #prepend>
+        <div class="ml-5 mr-5">
+          <div>
+            <div class="mb-5">
+              <v-img :lazy-src="logo" max-height="150" max-width="250" contain :src="logo"></v-img>
+            </div>
+            <span class="d-block text-body-2 title">Admin</span>
+          </div>
+        </div>
+        <v-divider />
+      </template>
       <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
+        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact exact-active-class="active-link"
+          style="padding: 0px">
+          <div class="d-flex pl-4">
+            <v-list-item-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title" />
+            </v-list-item-content>
+          </div>
+        </v-list-item>
+        <v-list-item to="/users" router exact exact-active-class="active-link" style="padding: 0px">
+          <div class="d-flex pl-4">
+            <v-list-item-action>
+              <v-icon>mdi-account-multiple</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title v-text="'Usuarios'" />
+            </v-list-item-content>
+          </div>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title" />
+    <v-app-bar fixed app flat clipped-left color="primary">
+      <v-app-bar-nav-icon color="white" @click.stop="drawer = !drawer" />
+
+      <v-toolbar-title class="white--text title" v-text="title" />
       <v-spacer />
-      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
     </v-app-bar>
-    <v-main>
+
+    <v-main class="grey lighten-4">
       <v-container>
-        <Nuxt />
+        <nuxt />
       </v-container>
     </v-main>
-    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light> mdi-repeat </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    <v-overlay :value="isLoading">
+      <v-progress-circular color="primary" indeterminate size="128"></v-progress-circular>
+    </v-overlay>
   </v-app>
 </template>
 
@@ -67,13 +60,11 @@ export default {
   name: 'DefaultLayout',
   data() {
     return {
-      clipped: false,
       drawer: false,
-      fixed: false,
       items: [
         {
           icon: 'mdi-apps',
-          title: 'Welcome',
+          title: 'Inicio',
           to: '/',
         },
         {
@@ -83,9 +74,12 @@ export default {
         },
       ],
       miniVariant: false,
-      right: true,
-      rightDrawer: false,
       title: 'Vuetify.js',
+    }
+  },
+  computed: {
+    isLoading() {
+      return this.$store.getters.isLoading;
     }
   },
 }
