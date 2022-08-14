@@ -1,7 +1,7 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 
 export const state = () => ({
-    isLoading: false as Boolean,
+    isLoading: false as boolean,
     things: [] as string[],
     name: 'Me',
 })
@@ -14,7 +14,7 @@ export const getters: GetterTree<RootState, RootState> = {
 }
 
 export const mutations: MutationTree<RootState> = {
-    CHANGE_NAME: (state, newName: string) => (state.name = newName),
+    setLoading: (state) => (state.isLoading = !state.isLoading)
 }
 
 export const actions: ActionTree<RootState, RootState> = {
