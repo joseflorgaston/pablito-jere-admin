@@ -6,8 +6,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - pablito-jere-admin',
-    title: 'pablito-jere-admin',
+    titleTemplate: '%s - admin',
+    title: 'pablito-jere',
     htmlAttrs: {
       lang: 'en',
     },
@@ -46,7 +46,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/',
+    baseURL: 'http://localhost:5000/api/',
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
@@ -56,18 +56,24 @@ export default {
       dark: false,
       themes: {
         dark: {
-          primary: colors.blue.darken2,
+          primary: "#0c0c22",
+          secondary: "#4e4c6b",
+          background: "#13142a",
+          light: "#aaa6ca",
+          dark: "#00001a",
           accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
           info: colors.teal.lighten1,
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
           success: colors.green.accent3,
         },
         light: {
-          primary: colors.blue,
+          primary: "#0c0c22",
+          secondary: "#4e4c6b",
+          background: "#13142a",
+          light: "#aaa6ca",
+          dark: "#00001a",
           accent: colors.grey,
-          secondary: colors.amber,
           info: colors.teal,
           warning: colors.amber,
           error: colors.deepOrange,
