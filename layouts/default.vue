@@ -1,4 +1,4 @@
-
+<!-- eslint-disable vue/first-attribute-linebreak -->
 <template>
   <v-app>
     <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" app clipped color="dark">
@@ -14,8 +14,7 @@
         <v-divider> </v-divider>
       </template>
       <v-list>
-        <v-list-item
-          v-for="(item, i) in items" :key="i" :to="item.to" router exact exact-active-class="active-link"
+        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact exact-active-class="active-link"
           style="padding: 0px">
           <div class="d-flex pl-4">
             <v-list-item-action>
@@ -39,34 +38,37 @@
       </v-container>
     </v-main>
     <v-overlay :value="isLoading">
-      <v-progress-circular color="primary" indeterminate size="128"></v-progress-circular>
+      <v-progress-circular color="secondary" indeterminate size="128">Cargando</v-progress-circular>
     </v-overlay>
+    <SnackBar></SnackBar>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import SnackBar from '~/components/Shared/SnackBar.vue';
 export default Vue.extend({
-  name: 'DefaultLayout',
+  name: "DefaultLayout",
+  components: { SnackBar },
   data() {
     return {
       drawer: false,
-      logo: require('../assets/images/logo.jpeg'),
+      logo: require("../assets/images/logo.jpeg"),
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Inicio',
-          to: '/',
+          icon: "mdi-apps",
+          title: "Inicio",
+          to: "/",
         },
         {
-          icon: 'mdi-account',
-          title: 'Usuarios',
-          to: '/users',
+          icon: "mdi-account",
+          title: "Usuarios",
+          to: "/users",
         },
       ],
       miniVariant: false,
-      title: 'Comision Pablito Jere' as string,
-    }
+      title: "Comision Pablito Jere" as string,
+    };
   },
   computed: {
     isLoading(): boolean {
