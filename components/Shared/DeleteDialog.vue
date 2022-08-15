@@ -9,7 +9,7 @@
         </v-card-title>
 
         <div class="ma-8 d-flex justify-center">
-            <h2>{{ editItem.name }}</h2>
+            <h2>{{ name }}</h2>
         </div>
         <v-divider></v-divider>
 
@@ -29,32 +29,27 @@ export default Vue.extend({
             type: String,
             required: true,
         },
-        editItem: {
-            type: Object,
-            required: true,
-        },
-        deleteUrl: {
+        name: {
             type: String,
-            required: true,
+            required: true
         },
-        getUrl: {
+        removeUrl: {
             type: String,
             required: true,
         },
     },
     methods: {
-        deleteItem() {
+        async deleteItem() {
             try {
                 this.$store.commit('setLoading')
                 this.closeDialog();
-                /* await this.$axios.$delete(`${this.deleteUrl}/` + this.editItem._id)
-                this.$store.commit('setSuccess', this.title + " Eliminado exitosamente");
-                const items = await this.$axios.$get(`${this.getUrl}`)
-                this.$store.commit('setItems', items.data)
-                this.$store.commit('setCount', items.count) */
-                this.$store.commit('setLoading')
+                this.$store.commit('setSuccess', "Eliminado exitosamente");
+                await this.$axios.$delete(`${this.removeUrl}/`);
+                await this.$emit('getPublications');
             } catch (error) {
-                this.$store.commit('setError', 'Ha ocurrido un error')
+                this.$store.commit('setError', 'Ha ocurrido un error');
+            } finally {
+                this.$store.commit('setLoading');
             }
         },
         closeDialog() {

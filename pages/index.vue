@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/first-attribute-linebreak -->
 <template>
   <div>
     <div class="row flex-wrap">
@@ -5,15 +6,16 @@
         <h2>Publicaciones</h2>
       </div>
       <div class="col-12 col-sm-6 col-lg-3">
-        <v-btn color="primary" @click="showAddDialog()">
+        <v-btn color="primary" @click="showOrCloseAddDialog()">
           <v-icon>mdi-plus</v-icon>
           Agregar
         </v-btn>
-        <v-btn :disabled="publication.title == null" class="mx-2" color="info" @click="showEditDialog()">
+        <v-btn :disabled="publication.title == null" class="mx-2" color="info" @click="showOrCloseEditDialog()">
           <v-icon>mdi-pencil</v-icon>
           Editar
         </v-btn>
-        <v-btn :disabled="publication.title == null" class="my-2" color="red white--text" @click="showDeleteDialog()">
+        <v-btn :disabled="publication.title == null" class="my-2" color="red white--text"
+          @click="showOrCloseDeleteDialog()">
           <v-icon>mdi-delete</v-icon>
           Eliminar
         </v-btn>
@@ -32,19 +34,25 @@
       </div>
       <div class="col-12 col-lg-9 text-center">
         <h2>Muestra</h2>
-        <v-img :src="publication.imageUrl" :lazy-src="logo" width="100%" style="max-height:60vh; object-fit: contain;">
-        </v-img>
+        <v-carousel v-model="carousel" class="dark">
+          <v-carousel-item v-for="(image, i) in publication.publicationImages" :key="i">
+            <v-img contain :lazy-src="loadingImage" :src=image.imageUrl width="100%" style="max-height:53vh;"></v-img>
+          </v-carousel-item>
+        </v-carousel>
         <h4>{{ publication.title }}</h4>
         <span>{{ publication.description }}</span>
       </div>
     </div>
     <v-dialog v-model="showDialog" transition="dialog-top-transition" max-width="100%" width="900" persistent>
-      <AddPublication @closeDialog="closeDialog()"></AddPublication>
+      <AddPublication @closeDialog="showOrCloseAddDialog()" @getPublications="getPublications()"></AddPublication>
     </v-dialog>
-    <v-dialog v-model="deleteDialog" transition="dialog-top-transition" max-width="100%" width="500" persistent>
-      <DeleteDialog
-        title="publicacion" :edit-item="{ name: 'Publicacion 1' }" delete-url="" get-url=""
-        @closeDialog="showDeleteDialog()"></DeleteDialog>
+    <v-dialog v-model="showEditDialog" transition="dialog-top-transition" max-width="100%" width="900" persistent>
+      <EditPublication v-bind="publication" @closeDialog="showOrCloseEditDialog()" @getPublications="getPublications()">
+      </EditPublication>
+    </v-dialog>
+    <v-dialog v-model="showDeleteDialog" transition="dialog-top-transition" max-width="100%" width="500" persistent>
+      <DeleteDialog title="publicacion" :name="publication.title" :remove-url="'publications/' + publication.id"
+        @getPublications="getPublications()" @closeDialog="showOrCloseDeleteDialog()"></DeleteDialog>
     </v-dialog>
   </div>
 </template>
@@ -53,44 +61,34 @@
 import Vue from 'vue';
 import AddPublication from '~/components/Publications/AddPublication.vue';
 import DeleteDialog from '~/components/Shared/DeleteDialog.vue';
+import EditPublication from '~/components/Publications/EditPublication.vue';
 import { Publication } from '~/models/Publication';
 
 
 export default Vue.extend({
   name: 'IndexPage',
-  components: { AddPublication, DeleteDialog },
+  components: { AddPublication, DeleteDialog, EditPublication },
   data() {
     return {
       showDialog: false,
-      deleteDialog: false,
+      showEditDialog: false,
+      showDeleteDialog: false,
       publication: {} as Publication,
       publications: [] as Publication[],
       logo: require('../assets/images/logo.jpeg'),
+      carousel: null,
+      loadingImage: require('../assets/images/loading.gif')
     }
   },
-  beforeMount() {
-    this.publications = [
-      {
-        title: "Publicacion 1",
-        description: "Esta es una descripcion",
-        publicationImages: [{imageSrc: "https://fondosmil.com/fondo/11800.jpg"}]
-      },
-      {
-        title: "Publicacion 2",
-        description: "Esta es una descripcion",
-        publicationImages: [{imageSrc: "https://fondosmil.com/fondo/11800.jpg"}]
-      },
-      {
-        title: "Publicacion 3",
-        description: "Esta es una descripcion",
-        publicationImages: [{imageSrc: "https://fondosmil.com/fondo/11800.jpg"}]
-      },
-      {
-        title: "Publicacion 4",
-        description: "Esta es una descripcion",
-        publicationImages: [{imageSrc: "https://fondosmil.com/fondo/11800.jpg"}]
-      },
-    ];
+  async beforeMount() {
+    try {
+      this.$store.commit('setLoading');
+      await this.getPublications();
+    } catch (error) {
+      this.$store.commit('setError', "Ha ocurrido un error, intentelo de nuevo mas tarde");
+    } finally {
+      this.$store.commit('setLoading');
+    }
   },
   methods: {
     addSelectedClass(key: number) {
@@ -105,17 +103,26 @@ export default Vue.extend({
       this.addSelectedClass(key);
       this.publication = item;
     },
-    showAddDialog() {
+    testSnackbar() {
+      this.$store.commit('setSuccess', "Xddddd");
+    },
+    showOrCloseAddDialog() {
       this.showDialog = !this.showDialog;
     },
-    showEditDialog() {
-      this.showDialog = !this.showDialog;
+    showOrCloseEditDialog() {
+      this.showEditDialog = !this.showEditDialog;
     },
-    showDeleteDialog() {
-      this.deleteDialog = !this.deleteDialog;
+    showOrCloseDeleteDialog() {
+      this.showDeleteDialog = !this.showDeleteDialog;
     },
-    closeDialog() {
-      this.showDialog = false;
+    async getPublications() {
+      this.publications = (await this.$axios.get("publications")).data as Publication[];
+      this.publications.length > 0 ? this.publication = this.publications[0] : this.publication = {
+        id: 0,
+        title: null,
+        description: null,
+        publicationImages: []
+      };
     }
   },
 
