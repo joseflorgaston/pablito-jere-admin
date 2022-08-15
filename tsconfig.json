@@ -8,6 +8,7 @@
     "allowJs": true,
     "sourceMap": true,
     "strict": true,
+    "jsx": "preserve",
     "strictNullChecks": false,
     "noEmit": true,
     "experimentalDecorators": true,
