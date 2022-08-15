@@ -1,3 +1,3 @@
 export interface PublicationImage {
-    imageSrc: string,
+    imageUrl: string,
   }
