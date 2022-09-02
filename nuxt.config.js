@@ -2,7 +2,7 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  ssr: false,
+  ssr: true,
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -23,6 +23,8 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 
+  target: 'static',
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
 
@@ -41,12 +43,13 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'http://localhost:5000/api/',
+    baseURL: 'http://localhost:5000/api/' // 'https://pablitojere20220815011225.azurewebsites.net/api/' //,
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
@@ -81,6 +84,34 @@ export default {
         },
       },
     },
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        scheme: 'refresh',
+        token: {
+          property: "token", // property name that the Back-end sends for you as a access token for saving on localStorage and cookie of user browser
+          global: true,
+          required: true,
+          type: "Bearer",
+          maxAge: 60 * 60,
+        },
+        refreshToken: {
+          property: "token", // property name that the Back-end sends for you as a refresh token for saving on localStorage and cookie of user browser
+          data: "token", //
+          maxAge: 60 * 60 * 24 * 30
+        },// setting user fetch api to false
+        endpoints: {
+          login: { url: "/accounts/login", method: "post" },
+          refresh: { url: "/accounts/refreshToken", method: "get" },
+          logout: false, //  we don't have an endpoint for our logout in our API and we just remove the token from localstorage
+          // user: { url: '/api/auth/user', method: 'get', propertyName: 'user' }
+          user: false,
+        },
+        // autoLogout: false
+      }
+    }
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

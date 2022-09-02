@@ -6,7 +6,6 @@
         <div class="ml-5 mr-5">
           <div>
             <div class="mb-5">
-
             </div>
             <span class="d-block text-body-2 title white--text">Admin</span>
           </div>
@@ -52,7 +51,7 @@ export default Vue.extend({
   components: { SnackBar },
   data() {
     return {
-      drawer: false,
+      drawer: true,
       logo: require("../assets/images/logo.jpeg"),
       items: [
         {
@@ -78,7 +77,9 @@ export default Vue.extend({
 })
 </script>
 <style>
+@import "../assets/styles.css";
 .active-link {
   background-color: #32314e;
 }
+
 </style>

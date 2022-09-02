@@ -33,13 +33,12 @@
         </div>
       </div>
       <div class="col-12 col-lg-9 text-center">
-        <h2>Muestra</h2>
+        <h2>{{publication.title}}</h2>
         <v-carousel v-model="carousel" class="dark">
           <v-carousel-item v-for="(image, i) in publication.publicationImages" :key="i">
             <v-img contain :lazy-src="loadingImage" :src=image.imageUrl width="100%" style="max-height:53vh;"></v-img>
           </v-carousel-item>
         </v-carousel>
-        <h4>{{ publication.title }}</h4>
         <span>{{ publication.description }}</span>
       </div>
     </div>
@@ -51,8 +50,7 @@
       </EditPublication>
     </v-dialog>
     <v-dialog v-model="showDeleteDialog" transition="dialog-top-transition" max-width="100%" width="500" persistent>
-      <DeleteDialog title="publicacion" :name="publication.title" :remove-url="'publications/' + publication.id"
-        @getPublications="getPublications()" @closeDialog="showOrCloseDeleteDialog()"></DeleteDialog>
+      <DeleteDialog v-bind="deleteOptions" @getPublications="getPublications()" @closeDialog="showOrCloseDeleteDialog()"></DeleteDialog>
     </v-dialog>
   </div>
 </template>
@@ -68,15 +66,17 @@ import { Publication } from '~/models/Publication';
 export default Vue.extend({
   name: 'IndexPage',
   components: { AddPublication, DeleteDialog, EditPublication },
+  middleware: 'auth',
   data() {
     return {
       showDialog: false,
       showEditDialog: false,
       showDeleteDialog: false,
+      carousel: 0,
       publication: {} as Publication,
       publications: [] as Publication[],
+      deleteOptions: {},
       logo: require('../assets/images/logo.jpeg'),
-      carousel: null,
       loadingImage: require('../assets/images/loading.gif')
     }
   },
@@ -113,6 +113,11 @@ export default Vue.extend({
       this.showEditDialog = !this.showEditDialog;
     },
     showOrCloseDeleteDialog() {
+      this.deleteOptions = {
+        title: "Publicación",
+        name: this.publication.title,
+        removeUrl: `publications/${this.publication.id}`
+      }
       this.showDeleteDialog = !this.showDeleteDialog;
     },
     async getPublications() {
