@@ -2,7 +2,7 @@
     <div>
         <div class="d-flex justify-space-between pa-1 pb-3">
             <h2>Usuarios</h2>
-            <v-btn color="secondary" @click="showAddUserModal()">
+            <v-btn color="primary" @click="showAddUserModal()">
                 <v-icon>mdi-plus</v-icon>
                 Agregar
             </v-btn>
@@ -13,19 +13,11 @@
                 :loading="loading" :footer-props="{
                     itemsPerPageOptions: [5, 10, 15],
                 }">
-                <template #[`item.actions`]=item>
-                    <v-tooltip bottom>
-                        <template #activator="{ on, attrs }">
-                            <v-btn icon v-bind="attrs" v-on="on" @click="openEditDialog(item)">
-                                <v-icon color="primary" title="editar">mdi-pencil</v-icon>
-                            </v-btn>
-                        </template>
-                        <span>Editar Usuario</span>
-                    </v-tooltip>
+                <template #[`item.actions`]="{ item }">
                     <v-tooltip bottom>
                         <template #activator="{ on, attrs }">
                             <v-btn 
-                                icon :disabled="item.inOrder > 0" v-bind="attrs" @click="showOrCloseDeleteDialog(item)"
+                                icon :disabled="item.inOrder > 0" v-bind="attrs" @click="showDeleteModal(item)"
                                 v-on="on">
                                 <v-icon color="error" title="eliminar">mdi-delete</v-icon>
                             </v-btn>
@@ -36,11 +28,12 @@
             </v-data-table>
         </v-card>
         <v-dialog v-model="showAddDialog" transition="dialog-top-transition" max-width="100%" width="600" persistent>
-            <AddUserDialog @getPublications="getUsers()" @closeDialog="showAddUserModal()">
+            <AddUserDialog @setUsers="setUsers" @setCount="setCount" @closeDialog="showAddUserModal()">
             </AddUserDialog>
         </v-dialog>
         <v-dialog v-model="showDeleteDialog" transition="dialog-top-transition" max-width="100%" width="500" persistent>
-            <DeleteDialog v-bind="deleteOptions" @getPublications="getUsers()" @closeDialog="showOrCloseDeleteDialog({})">
+            <DeleteDialog 
+            v-bind="deleteOptions" @closeDialog="closeDeleteModal()" @setUsers="setUsers" @setCount="setCount">
             </DeleteDialog>
         </v-dialog>
     </div>
@@ -86,9 +79,7 @@ export default Vue.extend({
     async beforeMount() {
         try {
             this.$store.commit('setLoading');
-            const response = await this.$axios.get("accounts/users");
-            this.items = response.data.users;
-            this.count = response.data.count;
+            await this.getUsers();
         } catch (error) {
 
         } finally {
@@ -98,22 +89,33 @@ export default Vue.extend({
     },
     methods: {
         async getUsers() {
-
+            const response = await this.$axios.get("accounts/users");
+            this.items = response.data.users;
+            this.count = response.data.count;
+        },
+        setUsers(users:[]) {
+            console.log(users);
+            this.items = users;
+        },
+        setCount(count:number) {
+            console.log(count)
+            this.count = count;
         },
         showAddUserModal() {
             this.showAddDialog = !this.showAddDialog;
         },
-        showOrCloseDeleteDialog(user: any) {
+        showDeleteModal(user: any) {
             this.deleteOptions = {
                 title: "Usuario",
                 name: user.userName,
                 removeUrl: `publications/${user.id}`
             }
-            this.showDeleteDialog = !this.showDeleteDialog;
+            this.showDeleteDialog = true;
         },
-        openEditDialog(item: any) {
-            console.log(item);
+        closeDeleteModal(){
+            this.showDeleteDialog = false;
         }
+
     }
 })
 </script>
