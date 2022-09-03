@@ -44,9 +44,9 @@ export default Vue.extend({
             try {
                 this.$store.commit('setLoading')
                 this.closeDialog();
+                await this.$axios.$delete(`${this.removeUrl}`);
+                await this.$emit("getUsers");
                 this.$store.commit('setSuccess', "Eliminado exitosamente");
-                await this.$axios.$delete(`${this.removeUrl}/`);
-                await this.$emit('getPublications');
             } catch (error) {
                 this.$store.commit('setError', 'Ha ocurrido un error');
             } finally {

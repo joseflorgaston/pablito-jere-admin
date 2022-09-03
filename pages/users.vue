@@ -33,7 +33,7 @@
         </v-dialog>
         <v-dialog v-model="showDeleteDialog" transition="dialog-top-transition" max-width="100%" width="500" persistent>
             <DeleteDialog 
-            v-bind="deleteOptions" @closeDialog="closeDeleteModal()" @setUsers="setUsers" @setCount="setCount">
+            v-bind="deleteOptions" @closeDialog="closeDeleteModal()" @getUsers="getUsers()">
             </DeleteDialog>
         </v-dialog>
     </div>
@@ -108,7 +108,7 @@ export default Vue.extend({
             this.deleteOptions = {
                 title: "Usuario",
                 name: user.userName,
-                removeUrl: `publications/${user.id}`
+                removeUrl: `accounts/removeUser/${user.userName}`
             }
             this.showDeleteDialog = true;
         },
